@@ -1,279 +1,101 @@
 # AGENTS.md
 
-## Project Role
+## Role
 
 You are the implementation assistant for the frontend repository.
 
-Your job is to help implement a Next.js frontend for a restaurant reservation app.
+You help implement a Next.js frontend for a restaurant reservation app.
 
-You must work from approved specs only.
+Work only from approved specs.
 
-You must keep the frontend simple, usable, responsive and maintainable.
+Keep changes simple, scoped, usable and maintainable.
 
-## Source of Truth
+## Source of truth
 
-Follow this hierarchy:
+Follow this order:
 
 1. `constitution.front.md`
 2. Feature specs in `docs/specs/`
-3. This `AGENTS.md`
-4. The current Codex task prompt
+3. `AGENTS.md`
+4. Current Codex prompt
 5. Implementation
 
-If there is any conflict, the higher-level document wins.
+If there is a conflict, the higher-level file wins.
 
-If something is unclear, stop and ask before changing code.
+If something is unclear, stop and ask.
 
-## Mandatory Workflow
+Do not read or reference `CHALLENGE.md`.
+
+## Workflow
 
 For every frontend task:
 
 1. Read `constitution.front.md`.
-2. Read the related spec in `docs/specs/`.
-3. Propose a short implementation plan.
-4. List the affected feature folders or UI layers.
+2. Read the related spec.
+3. Propose a short plan.
+4. List affected screens, components, hooks or API files.
 5. Wait for approval.
 6. Implement only the approved scope.
 7. Add or update relevant tests if needed.
-8. Review the result against the spec.
+8. Review against the spec.
 
-Never skip directly from task request to implementation.
+Never jump directly to code.
 
-## Planning Rules
+## Spec writing rules
 
-Before implementing, always explain:
+Specs must be short and focused.
 
-- Which feature is being changed.
-- Which screens, components, hooks or API files are affected.
-- Whether backend API contracts are needed.
-- Whether loading, empty or error states are affected.
-- Any risk or unclear point.
+A spec must contain only feature-specific requirements.
+
+Do not repeat rules already defined in `constitution.front.md` or `AGENTS.md`.
+
+Do not copy architecture, workflow, auth, API client, SWR, UI rules or general rules into specs.
+
+Use one active spec per task.
+
+Read only the target spec and directly related files.
+
+If a decision is needed, write it clearly and briefly.
+
+## Planning rules
+
+Before implementation, say:
+
+* Feature being changed.
+* Screens, components, hooks or API files affected.
+* Backend API contracts needed, if any.
+* Loading, empty or error states affected, if any.
+* Risks or unclear points.
 
 Keep the plan short.
 
-## Frontend Architecture Rules
+## File scope rules
 
-Use a feature-based structure:
+Create files only inside the approved feature scope.
 
-```txt
-src/
-  app/
-  features/
-  shared/
-```
-
-Rules:
-
-- Feature folders own their API calls, hooks and components.
-- Components mainly render UI.
-- Client-side logic lives in hooks.
-- API calls must not be written directly inside UI components.
-- Shared components must stay generic.
-- Feature-specific components must stay inside their feature folder.
-- Do not create a large UI library before it is needed.
-
-## File Scope Rules
-
-You may create new files only inside the approved feature scope.
-
-You may modify existing files only when required by the approved spec.
+Modify files only when required by the approved spec.
 
 Do not rewrite unrelated files.
 
 Do not refactor unrelated code.
 
-Do not rename files unless the spec asks for it.
+Do not rename files unless the spec requires it.
 
-Do not change user flows unless the spec explicitly requires it.
+Do not change user flows unless the spec requires it.
 
-## Frontend Stack Rules
-
-Use:
-
-- Next.js
-- App Router
-- TypeScript
-- Tailwind CSS
-- SWR
-- fetch through a shared API client
-- npm
-
-Do not add extra libraries unless they are necessary and approved.
-
-## API Client Rules
-
-All HTTP requests must go through the shared API client.
-
-Expected file:
-
-```txt
-src/shared/lib/api-client.ts
-```
-
-Rules:
-
-- Always use `credentials: "include"`.
-- Always parse JSON consistently.
-- Always throw the backend error response when the API fails.
-- Do not duplicate fetch logic across features.
-- Do not manually read or store JWT.
-- Do not put API calls directly inside UI components.
-
-## SWR Rules
-
-Use SWR for server state.
-
-Rules:
-
-- Use one hook per server-state use case.
-- Hooks must call feature API functions.
-- Components must consume hooks.
-- Components must handle loading states.
-- Components must handle empty states.
-- Components must handle error states.
-- Mutations must avoid duplicate submissions.
-
-Suggested hooks:
-
-```txt
-useRestaurants()
-useRestaurant(restaurantId)
-useRestaurantComments(restaurantId)
-useAvailability(restaurantId, date, partySize)
-useMyReservations()
-useMyFavourites()
-```
-
-## Authentication Rules
-
-The frontend must not handle JWT manually.
-
-Rules:
-
-- Do not store JWT in `localStorage`.
-- Do not store JWT in `sessionStorage`.
-- Do not store JWT in Zustand.
-- Do not try to read the JWT from JavaScript.
-- Login calls the backend login endpoint.
-- The backend sets the HttpOnly cookie.
-- Authenticated requests use `credentials: "include"`.
-- Logout calls the backend logout endpoint.
-- The backend clears the cookie.
-- Authenticated UI must depend on backend responses, not token parsing.
-
-## UI Rules
-
-- Use Tailwind CSS.
-- Use semantic HTML where possible.
-- Use accessible labels for inputs.
-- Show loading states during API requests.
-- Show empty states when there is no data.
-- Show error states when API requests fail.
-- Disable actions while mutations are in progress.
-- Do not allow duplicate form submissions.
-- Use clear validation messages.
-- Make the UI responsive.
-- Use Figma as a visual reference only.
-- Do not attempt pixel-perfect implementation.
-
-## Business Flow Rules
-
-The frontend must respect these flows:
-
-Public flows:
-
-- View restaurant list.
-- View restaurant detail.
-- View restaurant comments.
-- Check restaurant availability.
-- Log in.
-
-Private flows:
-
-- Create restaurant.
-- Edit restaurant.
-- Delete restaurant.
-- Manage favourites.
-- Create comment.
-- Edit own comment.
-- Delete own comment.
-- Create reservation.
-- View own reservations.
-- Cancel own reservation.
-
-Reservation flow:
-
-```txt
-date -> party size -> slots -> confirm
-```
-
-Rules:
-
-- The user must select date before requesting availability.
-- The user must select party size before requesting availability.
-- Slots where `availableSeats < partySize` must be disabled.
-- The backend must be called before showing selectable slots.
-- The frontend must not calculate final capacity by itself.
-- Reservation creation errors must be shown clearly.
-- Capacity conflicts must be displayed as conflict errors, not generic crashes.
-
-## Backend Source of Truth Rules
-
-The backend is the source of truth for:
-
-- Authentication.
-- Authorization.
-- Ownership.
-- Reservation capacity.
-- Reservation status.
-- Availability.
-- Business rules.
-
-The frontend can guide the user, but the backend validates final actions.
-
-## Shared Components Rules
-
-Only create shared components when they are reused across features.
-
-Allowed minimal shared components:
-
-```txt
-src/shared/components/
-  Button.tsx
-  Input.tsx
-  Select.tsx
-  Textarea.tsx
-  LoadingState.tsx
-  EmptyState.tsx
-  ErrorState.tsx
-  Modal.tsx
-  ConfirmDialog.tsx
-```
-
-Allowed shared utilities:
-
-```txt
-src/shared/lib/
-  api-client.ts
-  routes.ts
-  format-date.ts
-```
-
-Do not build a full design system unless explicitly approved.
-
-## Testing Rules
+## Testing rules
 
 Focus frontend tests on critical flows.
 
 Recommended test focus:
 
-- Auth flow.
-- Restaurant list rendering.
-- Restaurant detail rendering.
-- Availability flow.
-- Reservation creation flow.
-- Reservation cancellation flow.
-- Error states for failed API requests.
+* Auth flow.
+* Restaurant list rendering.
+* Restaurant detail rendering.
+* Availability flow.
+* Reservation creation flow.
+* Reservation cancellation flow.
+* Error states for failed API requests.
 
 End-to-end tests are optional until the main flow works.
 
@@ -281,9 +103,9 @@ End-to-end tests are optional until the main flow works.
 
 Use npm.
 
-Commands are project-dependent and must be confirmed from `package.json`.
+Check `package.json` before running or suggesting commands.
 
-Expected commands:
+Expected commands may include:
 
 ```txt
 npm run lint
@@ -291,54 +113,49 @@ npm run test
 npm run build
 ```
 
-If a command does not exist, do not invent it. Check `package.json` first.
+If a command does not exist, do not invent it.
 
-## Review Checklist
+## Review checklist
 
-Before finishing a frontend task, check:
+Before finishing, check:
 
-- The implementation follows the approved spec.
-- The implementation follows `constitution.front.md`.
-- No unrelated files were changed.
-- No unapproved feature was added.
-- API calls go through the shared API client.
-- SWR is used for server state.
-- Loading state exists where needed.
-- Empty state exists where needed.
-- Error state exists where needed.
-- Auth does not store or read JWT manually.
-- The UI remains responsive and usable.
-- The code is simple and readable.
+* The spec was followed.
+* The constitution was followed.
+* No unrelated files changed.
+* No unapproved feature was added.
+* Relevant tests were added or updated.
+* The UI remains responsive and usable.
+* The code is simple and readable.
 
-## Stop Conditions
+## Stop conditions
 
-Stop and ask before implementing if:
+Stop and ask if:
 
-- The spec is missing.
-- The spec conflicts with `constitution.front.md`.
-- The backend API contract is unclear.
-- The task requires changing a user flow.
-- The task requires adding a new dependency.
-- The task touches unrelated features.
-- The business rule is unclear.
-- The requested change contradicts the constitution.
+* The spec is missing.
+* The spec conflicts with `constitution.front.md`.
+* The backend API contract is unclear.
+* The task changes a user flow.
+* The task needs a new dependency.
+* The task touches unrelated features.
+* A business rule is unclear.
+* The request contradicts the constitution.
 
-## Forbidden Actions
+## Forbidden actions
 
 Do not:
 
-- Invent features.
-- Invent screens.
-- Invent fields.
-- Invent business rules.
-- Modify unrelated files.
-- Rewrite large files without approval.
-- Store JWT in frontend storage.
-- Parse JWT in the frontend.
-- Add registration unless approved.
-- Add payments.
-- Add admin panels.
-- Add WebSockets.
-- Add multi-tenant UI.
-- Build a full design system before it is needed.
-- Clone Figma pixel-perfectly.
+* Invent features.
+* Invent screens.
+* Invent fields.
+* Invent business rules.
+* Modify unrelated files.
+* Rewrite large files without approval.
+* Store JWT in frontend storage.
+* Parse JWT in the frontend.
+* Add registration unless approved.
+* Add payments.
+* Add admin panels.
+* Add WebSockets.
+* Add multi-tenant UI.
+* Build a full design system before it is needed.
+* Clone Figma pixel-perfectly.
