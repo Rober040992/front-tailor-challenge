@@ -24,6 +24,13 @@ function getApiBaseUrl(): string {
   return API_BASE_URL;
 }
 
+function buildApiUrl(path: string): string {
+  const baseUrl = getApiBaseUrl().replace(/\/+$/, "");
+  const requestPath = path.replace(/^\/+/, "");
+
+  return `${baseUrl}/${requestPath}`;
+}
+
 function isJsonBody(body: ApiClientOptions["body"]): body is object {
   return (
     typeof body === "object" &&
@@ -94,7 +101,7 @@ export async function apiClient<T>(
 ): Promise<T> {
   const headers = new Headers(options.headers);
   const body = buildRequestBody(options.body, headers);
-  const url = new URL(path, getApiBaseUrl());
+  const url = buildApiUrl(path);
 
   const response = await fetch(url, {
     ...options,
