@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 import type { RestaurantListItem } from "../types";
+import { StarRating } from "./star-rating";
 
 const FALLBACK_IMAGE = "/restaurant-miniature.png";
 
@@ -48,14 +49,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
           </p>
 
           <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-            {restaurant.averageRating !== null && (
-              <span
-                aria-label={`Average rating: ${restaurant.averageRating}`}
-                className="font-bold text-tailor-blue"
-              >
-                ★ {restaurant.averageRating}
-              </span>
-            )}
+            <StarRating averageRating={restaurant.averageRating} size="sm" />
             <span className="text-tailor-muted">
               {restaurant.commentsCount} comments
             </span>

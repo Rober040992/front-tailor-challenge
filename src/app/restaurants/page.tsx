@@ -26,15 +26,14 @@ export default function RestaurantsPage() {
 
         <section aria-labelledby="restaurants-heading" className="min-w-0">
           <header className="mb-8">
-            <p className="mb-2 text-sm font-bold uppercase tracking-widest text-tailor-blue">
-              Tailor
-            </p>
-            <h1
-              className="text-3xl font-bold sm:text-4xl"
-              id="restaurants-heading"
-            >
-              Restaurants
-            </h1>
+            <Image
+              alt="Tailor"
+              className="mb-4 h-auto w-28"
+              height={48}
+              priority
+              src="/Logo.png"
+              width={112}
+            />
           </header>
 
           <RestaurantList />

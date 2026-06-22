@@ -40,6 +40,7 @@ type RestaurantListItem = {
 
 The page must display:
 
+* The Tailor logo using `/Logo.png`.
 * A responsive restaurant list.
 * Restaurant cards rendered from the backend response.
 * A left-side static visual placeholder reserved for a future map.
@@ -68,7 +69,17 @@ Each restaurant card must navigate to:
 * The list must render only restaurants returned by `GET /restaurants`.
 * No mock restaurants.
 * No fake restaurant names.
-* If `averageRating` is `null`, the UI must not show a fake rating.
+* The raw `averageRating` value must be passed to the rating component without transformation.
+* The rating component must render exactly five neutral `★` characters as its base layer.
+* The rating component must overlay an identical amber `★` row clipped horizontally with `overflow: hidden`.
+* The overlay width must use `(Math.max(0, Math.min(5, averageRating)) / 5) * 100`.
+* `averageRating` values of `null` or `undefined` must render as `0%` fill.
+* The internal clamp is only a rendering guard and must not mutate the original value.
+* The rating fill must be continuous, without per-star rounding or half-star steps.
+* The rating fill width must transition smoothly when the value changes.
+* The rating component must support `sm`, `md` and `lg` font sizes.
+* The rating component must optionally display the numeric value.
+* The rating component must provide an accessible rating label.
 * If `image` is `null`, empty or fails to load, the UI must use `/restaurant-miniature.png`.
 * The left-side section is only a static visual placeholder for a future map.
 * No real map integration is implemented in this feature.
@@ -83,7 +94,8 @@ None.
 * API request fails.
 * API returns an empty array.
 * Restaurant image is missing, empty or invalid.
-* Restaurant has `averageRating: null`.
+* Restaurant has `averageRating: null` or `undefined`.
+* Restaurant has an `averageRating` outside the `0–5` range.
 
 **Tests:**
 
@@ -93,6 +105,13 @@ Manual checks only for this feature because the frontend test infrastructure is 
 * The page shows a loading state while fetching.
 * The page shows an error state when the request fails.
 * The page shows an empty state when the list is empty.
-* The page does not render a fake rating when `averageRating` is `null`.
+* Rating `0` renders five empty stars.
+* Rating `2.2` renders a continuous `44%` fill.
+* Rating `3.7` renders a continuous `74%` fill.
+* Rating `5` renders a continuous `100%` fill.
+* Rating `null` renders five empty stars without an error.
+* Rating `5.8` renders a continuous `100%` fill without mutating the value.
+* Rating prop changes transition the overlay width smoothly.
+* The raw `averageRating` reaches the rating component without preprocessing.
 * The page uses `/restaurant-miniature.png` when the restaurant image is missing or invalid.
 * Clicking a restaurant card navigates to `/restaurants/:id`.
