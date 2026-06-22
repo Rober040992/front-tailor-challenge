@@ -184,6 +184,20 @@ useMyFavourites()
 
 The frontend must not handle JWT manually.
 
+Registration flow:
+
+```txt
+Register page
+-> user enters email and username
+-> user clicks next
+-> password page
+-> user enters password
+-> user clicks finish
+-> frontend sends email, username and password to POST /auth/register
+-> backend creates the user
+-> frontend redirects user to login
+```
+
 Login flow:
 
 ```txt
@@ -217,6 +231,9 @@ Rules:
 * Do not store JWT in `sessionStorage`.
 * Do not store JWT in Zustand.
 * Do not read the JWT from JavaScript.
+* Registration must not authenticate the user automatically.
+* Registration success must redirect the user to login.
+* Password must not be persisted in `localStorage` or `sessionStorage`.
 * Authenticated UI depends on backend responses, not token parsing.
 
 ## Public and private flows
@@ -227,6 +244,7 @@ Public flows:
 * View restaurant detail.
 * View restaurant comments.
 * Check restaurant availability.
+* Register.
 * Log in.
 
 Private flows:
@@ -274,7 +292,29 @@ If `averageRating` is `null`, the UI must not show a fake rating.
 
 ### Auth UI
 
+Users must be able to register.
+
 Users must be able to log in.
+
+Registration UI is split into two steps.
+
+The first registration step must collect `email` and `username`.
+
+The second registration step must collect `password`.
+
+The user must not be registered until the password step is submitted.
+
+The password step must submit `email`, `username` and `password` together to the backend register endpoint.
+
+Registration must call the backend register endpoint.
+
+Registration success must redirect the user to login.
+
+Registration must not store JWT or mark the user as authenticated.
+
+Registration errors must be displayed clearly.
+
+Duplicated email or username errors must be handled clearly.
 
 Login must call the backend login endpoint.
 
@@ -366,7 +406,6 @@ The frontend can guide the user, but the backend validates final actions.
 
 ## Out of scope
 
-* User registration
 * Payments
 * Admin panels
 * Multi-tenant support
