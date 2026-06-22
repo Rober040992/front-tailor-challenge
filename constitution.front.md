@@ -274,6 +274,8 @@ Private flows:
 * Make the interface responsive.
 * Use Figma as visual reference only.
 * Prioritize usable flows over pixel-perfect matching.
+* Prefer standard Tailwind utilities over arbitrary values when an equivalent utility exists.
+* Use arbitrary Tailwind values only when required by the approved design or when no suitable standard utility exists.
 
 ## Business rules
 
