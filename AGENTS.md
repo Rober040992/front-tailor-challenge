@@ -17,8 +17,9 @@ Follow this order:
 1. `constitution.front.md`
 2. Feature specs in `docs/specs/`
 3. `AGENTS.md`
-4. Current Codex prompt
-5. Implementation
+4. UI skill files in `.codex/skills/`
+5. Current Codex prompt
+6. Implementation
 
 If there is a conflict, the higher-level file wins.
 
