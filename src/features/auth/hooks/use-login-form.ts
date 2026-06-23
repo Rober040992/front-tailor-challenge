@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEventHandler, useState } from "react";
+import { type SyntheticEvent, useState } from "react";
 
 import { loginUser } from "../api/login";
 import { getAuthErrorMessage } from "../lib/get-auth-error-message";
+import { useAuth } from "./use-auth";
 
 type LoginErrors = {
   password?: string;
@@ -27,13 +28,16 @@ function validateLogin(username: string, password: string): LoginErrors {
 
 export function useLoginForm() {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<LoginErrors>({});
   const [requestError, setRequestError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+  const handleSubmit = async (
+    event: SyntheticEvent<HTMLFormElement, SubmitEvent>,
+  ) => {
     event.preventDefault();
 
     if (isPending) {
@@ -56,6 +60,7 @@ export function useLoginForm() {
         username: normalizedUsername,
         password,
       });
+      await refreshUser();
       router.push("/restaurants");
     } catch (error) {
       setRequestError(getAuthErrorMessage(error));
