@@ -269,6 +269,7 @@ Private flows:
 * Disable actions while a mutation is in progress.
 * Do not allow duplicate form submissions.
 * Use clear validation messages.
+* Form validation and backend error messages must use the `tailor-error` color token.
 * Use accessible labels for inputs.
 * Use semantic HTML where possible.
 * Make the interface responsive.
