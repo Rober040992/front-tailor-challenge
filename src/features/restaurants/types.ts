@@ -7,3 +7,13 @@ export type RestaurantListItem = {
   averageRating: number | null;
   commentsCount: number;
 };
+
+export type RestaurantDetail = {
+  id: number;
+  name: string;
+  address: string;
+  description: string;
+  image: string | null;
+  averageRating: number | null;
+  commentsCount?: number;
+};
