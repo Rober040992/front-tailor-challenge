@@ -13,7 +13,5 @@ export type LoginRequest = {
 };
 
 export type CurrentUser = {
-  id: number;
-  email: string;
   username: string;
 };

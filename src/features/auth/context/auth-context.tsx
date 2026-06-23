@@ -29,7 +29,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     "auth/me",
     getCurrentUser,
   );
-// mutate calls auth/me again and updates user
+  console.log("AUTH current user", data)
+
   const refreshUser = useCallback(async () => {
     await mutate();
   }, [mutate]);

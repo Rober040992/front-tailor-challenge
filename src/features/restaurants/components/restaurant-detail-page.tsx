@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { CommentList } from "@/features/comments/components/comment-list";
+import { UserMenuDropdown } from "@/features/auth/components/user-menu-dropdown";
 import {
   ErrorState,
   LoadingState,
@@ -87,6 +88,9 @@ export function RestaurantDetailPage({
         >
           <Image alt="Tailor" height={32} src="/Logo.png" width={76} />
         </Link>
+      </div>
+      <div className="absolute right-4 top-4 z-20 sm:right-8 sm:top-8">
+        <UserMenuDropdown />
       </div>
 
       <RestaurantHero restaurant={restaurant} />

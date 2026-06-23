@@ -52,6 +52,13 @@ export function RegisterDetailsForm() {
           Log in
         </Link>
       </p>
+      <p className="text-center text-sm text-white/80">
+        <Link
+        className="font-bold text-white underline decoration-white/50 underline-offset-4 transition hover:decoration-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+        href="/">
+            Continue without and account
+        </Link>
+      </p>
     </form>
   );
 }

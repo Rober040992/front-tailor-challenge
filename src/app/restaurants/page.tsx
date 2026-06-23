@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { UserMenuDropdown } from "@/features/auth/components/user-menu-dropdown";
 import { RestaurantList } from "@/features/restaurants/components/restaurant-list";
 
 export default function RestaurantsPage() {
@@ -25,15 +26,16 @@ export default function RestaurantsPage() {
         </aside>
 
         <section aria-labelledby="restaurants-heading" className="min-w-0">
-          <header className="mb-8">
+          <header className="mb-8 flex items-start justify-between gap-4">
             <Image
               alt="Tailor"
-              className="mb-4 h-auto w-28"
+              className="h-auto w-28"
               height={48}
               priority
               src="/Logo.png"
               width={112}
             />
+            <UserMenuDropdown />
           </header>
 
           <RestaurantList />

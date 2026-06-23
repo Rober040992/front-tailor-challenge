@@ -2,25 +2,22 @@
 
 **Goal:**
 
-Create a reusable dropdown menu for user actions on the top rigt header.
+Create a reusable dropdown menu for user actions on restaurant screens.
+
+This spec does not create a global header.
+
+**Placement:**
+
+Render the user menu only where the consuming screen adds it:
+
+- Restaurant list
+- Restaurant detail
+- Create restaurant
+- Update restaurant
+
+Hidden on auth screens.
 
 **Endpoint(s):**
-
-Frontend placement:
-
-Hidden on:
-
-- /login
-- /register
-- /register/password
-
-Navigation targets:
-
-- /account
-- /restaurants/new
-- /login
-
-Backend action:
 
 - GET /auth/me
 - POST /auth/logout
@@ -41,31 +38,35 @@ UserMenuDropdownProps:
 
 **Output:**
 
-Closed state:
+Authenticated state:
 
-- Username + down arrow
+- Closed state:
+  - Username + down arrow
+- Expanded state:
+  - Username + up arrow
+  - Dropdown panel with:
+    - My account
+    - Add restaurant
+    - Log out
 
-Expanded state:
+Unauthenticated state:
 
-- Username + up arrow
-- Dropdown panel with:
-  - Mi cuenta
-  - Añadir restaurante
-  - Salir
+- Show a link to `/register` with the text `Don't have an account yet?`
 
 **Business rules:**
 
 - The dropdown base component must be reusable and shared.
-- The generic dropdown must not contain logout logic.
+- The generic dropdown must not contain auth or logout logic.
 - The user menu must use the shared dropdown component.
-- The username must be obtained from GET /auth/me.
-- The browser must send the HttpOnly authentication cookie with the request.
-- The backend must validate and decode the JWT.
-- The frontend must not read or decode the JWT.
-- The user menu must not render on login or register routes.
-- Mi cuenta navigates to /account.
-- Añadir restaurante navigates to /restaurants/new.
-- Salir calls logout and redirects to /login.
+- The user menu must use the current user from the auth provider.
+- The auth provider obtains the current user from GET /auth/me.
+- The user menu must not read or decode the JWT.
+- When the auth provider has a user, show the username on every supported screen that renders the dropdown.
+- When the auth provider has no user, show the register link instead.
+- My account navigates to `/account`.
+- Add restaurant navigates to `/restaurants/new`.
+- Log out calls POST `/auth/logout`.
+- Successful logout redirects to `/login`.
 
 **Validation:**
 
@@ -86,5 +87,5 @@ Expanded state:
 - Opens the dropdown when clicking the trigger.
 - Closes the dropdown when clicking the trigger again.
 - Shows the expected menu actions.
-- Calls the logout handler when clicking Salir.
-- Does not render on /login, /register, or /register/password.
+- Calls the logout handler when clicking Log out.
+- Shows the register link when there is no current user.
