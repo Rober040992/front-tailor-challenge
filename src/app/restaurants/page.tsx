@@ -5,15 +5,15 @@ import { RestaurantList } from "@/features/restaurants/list/components/restauran
 
 export default function RestaurantsPage() {
   return (
-    <main className="min-h-screen bg-tailor-black px-4 py-6 text-tailor-white sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(24rem,0.9fr)]">
+    <main className="min-h-screen bg-tailor-black px-4 py-6 text-tailor-white sm:px-6 lg:h-screen lg:overflow-hidden lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:h-full lg:grid-cols-[minmax(0,1.1fr)_minmax(24rem,0.9fr)]">
         <aside
           aria-label="Map placeholder"
-          className="relative hidden min-h-[calc(100vh-3rem)] overflow-hidden rounded-tailor-lg border border-tailor-border lg:block"
+          className="relative hidden overflow-hidden rounded-tailor-lg border border-tailor-border lg:block lg:h-full lg:min-h-0"
         >
           <Image
             alt=""
-            className="object-cover opacity-55"
+            className="object-cover object-center opacity-55"
             fill
             priority
             sizes="55vw"
@@ -25,8 +25,11 @@ export default function RestaurantsPage() {
           </p>
         </aside>
 
-        <section aria-labelledby="restaurants-heading" className="min-w-0">
-          <header className="mb-8 flex items-start justify-between gap-4">
+        <section
+          aria-labelledby="restaurants-heading"
+          className="min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col"
+        >
+          <header className="mb-8 flex items-start justify-between gap-4 lg:flex-none">
             <Image
               alt="Tailor"
               className="h-auto w-28"
@@ -38,7 +41,9 @@ export default function RestaurantsPage() {
             <UserMenuDropdown />
           </header>
 
-          <RestaurantList />
+          <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-2">
+            <RestaurantList />
+          </div>
         </section>
       </div>
     </main>
