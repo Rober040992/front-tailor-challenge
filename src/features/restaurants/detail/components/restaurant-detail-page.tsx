@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { CreateCommentForm } from "@/features/comments/components/create-comment-form";
 import { CommentList } from "@/features/comments/components/comment-list";
 import { UserMenuDropdown } from "@/features/auth/components/user-menu-dropdown";
 import {
@@ -141,32 +142,36 @@ export function RestaurantDetailPage({
             ) : null}
           </div>
 
-          {(hasAverageRating || hasCommentsCount) && (
-            <dl className="flex flex-wrap gap-x-8 gap-y-5 border-l border-tailor-border pl-6 lg:min-w-60 lg:flex-col">
-              {hasAverageRating && (
-                <div>
-                  <dt className="mb-2 text-xs font-bold uppercase tracking-widest text-tailor-muted">
-                    Average rating
-                  </dt>
-                  <dd>
-                    <StarRating
-                      averageRating={restaurant.averageRating}
-                    />
-                  </dd>
-                </div>
-              )}
-              {hasCommentsCount && (
-                <div>
-                  <dt className="text-xs font-bold uppercase tracking-widest text-tailor-muted">
-                    Comments
-                  </dt>
-                  <dd className="mt-1 text-2xl font-bold">
-                    {restaurant.commentsCount}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          )}
+          <aside className="space-y-6 border-t border-tailor-border pt-6 lg:min-w-72 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+            {(hasAverageRating || hasCommentsCount) && (
+              <dl className="flex flex-wrap gap-x-8 gap-y-5 lg:flex-col">
+                {hasAverageRating && (
+                  <div>
+                    <dt className="mb-2 text-xs font-bold uppercase tracking-widest text-tailor-muted">
+                      Average rating
+                    </dt>
+                    <dd>
+                      <StarRating
+                        averageRating={restaurant.averageRating}
+                      />
+                    </dd>
+                  </div>
+                )}
+                {hasCommentsCount && (
+                  <div>
+                    <dt className="text-xs font-bold uppercase tracking-widest text-tailor-muted">
+                      Comments
+                    </dt>
+                    <dd className="mt-1 text-2xl font-bold">
+                      {restaurant.commentsCount}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            )}
+
+            <CreateCommentForm restaurantId={restaurantId} />
+          </aside>
         </section>
 
         <section aria-labelledby="comments-heading" className="pt-14 sm:pt-20">
