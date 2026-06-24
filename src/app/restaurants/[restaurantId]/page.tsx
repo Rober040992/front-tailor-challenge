@@ -1,4 +1,4 @@
-import { RestaurantDetailPage } from "@/features/restaurants/components/restaurant-detail-page";
+import { RestaurantDetailPage } from "@/features/restaurants/detail/components/restaurant-detail-page";
 import { ErrorState } from "@/shared/components/states";
 
 type RestaurantPageProps = {

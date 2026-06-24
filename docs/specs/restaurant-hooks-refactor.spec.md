@@ -2,7 +2,7 @@
 
 **Goal:**
 
-Refactor restaurant create, update and delete hooks so API mutation hooks stay small and form hooks only own form-specific state.
+Refactor restaurant create, update and delete hooks so API request hooks stay small and form hooks only own form-specific state.
 
 Reorganize the restaurants feature into pragmatic flow-based folders.
 
@@ -67,17 +67,17 @@ Keep read hooks small:
 - `useRestaurants()`
 - `useRestaurant(restaurantId)`
 
-Add or keep small mutation hooks:
+Add or keep small request hooks:
 
-- `useCreateRestaurantMutation()`
-- `useUpdateRestaurantMutation()`
-- `useDeleteRestaurantMutation()`
+- `useCreateRestaurantRequest()`
+- `useUpdateRestaurantRequest()`
+- `useDeleteRestaurantRequest()`
 
-Mutation hooks must only own:
+Request hooks must only own:
 
-- mutation pending state
+- request pending state
 - backend request call
-- backend mutation error state or thrown error handling
+- backend request error state or thrown error handling
 - duplicate submission guard
 
 Form hooks must own:
@@ -86,7 +86,7 @@ Form hooks must own:
 - field validation
 - image preview state for create form
 - popup state
-- calling the relevant mutation hook
+- calling the relevant request hook
 
 Shared restaurant form validation may be extracted when it removes duplication between create and update.
 
@@ -124,7 +124,7 @@ Image data must not be sent.
 
 - Create validation must still reject empty or whitespace-only `name`, `address` and `description`.
 - Update validation must still reject empty or whitespace-only `name`, `address` and `description`.
-- Submit actions must remain disabled while their mutation is pending.
+- Submit actions must remain disabled while their request is pending.
 - Duplicate submissions must still be prevented.
 
 **Edge cases:**

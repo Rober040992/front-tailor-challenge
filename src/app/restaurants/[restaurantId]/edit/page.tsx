@@ -1,4 +1,4 @@
-import { UpdateRestaurantPage } from "@/features/restaurants/components/update-restaurant-page";
+import { UpdateRestaurantPage } from "@/features/restaurants/edit/components/update-restaurant-page";
 import { ErrorState } from "@/shared/components/states";
 
 type EditRestaurantPageProps = {

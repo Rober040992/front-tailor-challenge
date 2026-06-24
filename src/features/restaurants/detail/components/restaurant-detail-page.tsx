@@ -11,11 +11,11 @@ import {
 } from "@/shared/components/states";
 import type { ApiError } from "@/shared/lib/api-client";
 
-import { useDeleteRestaurant } from "../hooks/use-delete-restaurant";
+import { useDeleteRestaurant } from "../../delete/hooks/use-delete-restaurant";
+import { RestaurantResultPopup } from "../../shared/components/restaurant-result-popup";
+import { StarRating } from "../../shared/components/star-rating";
 import { useRestaurant } from "../hooks/use-restaurant";
 import { RestaurantHero } from "./restaurant-hero";
-import { RestaurantResultPopup } from "./restaurant-result-popup";
-import { StarRating } from "./star-rating";
 
 type RestaurantDetailPageProps = {
   restaurantId: number;

@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { LoadingState } from "@/shared/components/states";
 
+import { RestaurantResultPopup } from "../../shared/components/restaurant-result-popup";
 import { useCreateRestaurantForm } from "../hooks/use-create-restaurant-form";
-import { RestaurantResultPopup } from "./restaurant-result-popup";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) {

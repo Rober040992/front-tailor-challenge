@@ -1,4 +1,4 @@
-import { StarRating } from "@/features/restaurants/components/star-rating";
+import { StarRating } from "@/features/restaurants/shared/components/star-rating";
 
 type CommentRatingProps = {
   rating: number | null;

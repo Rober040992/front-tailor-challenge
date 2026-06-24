@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { UserMenuDropdown } from "@/features/auth/components/user-menu-dropdown";
-import { RestaurantList } from "@/features/restaurants/components/restaurant-list";
+import { RestaurantList } from "@/features/restaurants/list/components/restaurant-list";
 
 export default function RestaurantsPage() {
   return (

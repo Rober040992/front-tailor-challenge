@@ -8,8 +8,8 @@ import {
   LoadingState,
 } from "@/shared/components/states";
 
-import { useRestaurant } from "../hooks/use-restaurant";
-import { isRestaurantNotFoundError } from "../lib/get-restaurant-mutation-error-message";
+import { useRestaurant } from "../../detail/hooks/use-restaurant";
+import { isRestaurantNotFoundError } from "../../shared/lib/get-restaurant-request-error-message";
 import { UpdateRestaurantForm } from "./update-restaurant-form";
 
 type UpdateRestaurantPageProps = {

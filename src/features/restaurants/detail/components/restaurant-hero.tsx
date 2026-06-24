@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import type { RestaurantDetail } from "../types";
+import type { RestaurantDetail } from "../../shared/types";
 
 const FALLBACK_IMAGE = "/restaurant-detail.png";
 

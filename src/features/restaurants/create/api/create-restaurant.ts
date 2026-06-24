@@ -3,7 +3,7 @@ import { apiClient } from "@/shared/lib/api-client";
 import type {
   CreateRestaurantRequest,
   CreateRestaurantResponse,
-} from "../types";
+} from "../../shared/types";
 
 export function createRestaurant(
   input: CreateRestaurantRequest,

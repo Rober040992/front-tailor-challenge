@@ -1,42 +1,41 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { getRestaurantRequestErrorMessage } from "../../shared/lib/get-restaurant-request-error-message";
 import { deleteRestaurant } from "../api/delete-restaurant";
-import { getRestaurantMutationErrorMessage } from "../lib/get-restaurant-mutation-error-message";
 
-export function useDeleteRestaurant(restaurantId: number) {
-  const router = useRouter();
+export function useDeleteRestaurantRequest(restaurantId: number) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
-  const closeErrorPopup = () => {
+  const clearError = () => {
     setErrorMessage(null);
   };
 
-  const handleDelete = async () => {
+  const deleteRestaurantRequest = async (): Promise<boolean> => {
     if (isPending) {
-      return;
+      return false;
     }
 
-    setIsPending(true);
     setErrorMessage(null);
+    setIsPending(true);
 
     try {
       await deleteRestaurant(restaurantId);
-      router.push("/restaurants");
+      return true;
     } catch (error) {
-      setErrorMessage(getRestaurantMutationErrorMessage(error));
+      setErrorMessage(getRestaurantRequestErrorMessage(error));
+      return false;
     } finally {
       setIsPending(false);
     }
   };
 
   return {
-    closeErrorPopup,
+    clearError,
+    deleteRestaurantRequest,
     errorMessage,
-    handleDelete,
     isPending,
   };
 }

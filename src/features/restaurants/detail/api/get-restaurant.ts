@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/lib/api-client";
 
-import type { RestaurantDetail } from "../types";
+import type { RestaurantDetail } from "../../shared/types";
 
 export function getRestaurant(
   restaurantId: number,

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 
+import { RestaurantResultPopup } from "../../shared/components/restaurant-result-popup";
+import type { RestaurantDetail } from "../../shared/types";
 import { useUpdateRestaurantForm } from "../hooks/use-update-restaurant-form";
-import type { RestaurantDetail } from "../types";
-import { RestaurantResultPopup } from "./restaurant-result-popup";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) {

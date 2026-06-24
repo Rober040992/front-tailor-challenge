@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { CreateRestaurantForm } from "@/features/restaurants/components/create-restaurant-form";
+import { CreateRestaurantForm } from "@/features/restaurants/create/components/create-restaurant-form";
 
 export default function NewRestaurantPage() {
   return (

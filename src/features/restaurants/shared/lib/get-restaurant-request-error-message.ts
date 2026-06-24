@@ -9,7 +9,7 @@ function hasStatusCode(error: unknown, statusCode: number): boolean {
   );
 }
 
-export function getRestaurantMutationErrorMessage(error: unknown): string {
+export function getRestaurantRequestErrorMessage(error: unknown): string {
   if (hasStatusCode(error, 403)) {
     return "You cannot edit this restaurant.";
   }

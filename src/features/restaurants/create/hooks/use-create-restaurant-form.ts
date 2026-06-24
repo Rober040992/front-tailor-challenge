@@ -8,38 +8,17 @@ import {
   useState,
 } from "react";
 
-import { createRestaurant } from "../api/create-restaurant";
+import {
+  type RestaurantFormErrors,
+  validateRestaurantForm,
+} from "../../shared/lib/validate-restaurant-form";
+import { useCreateRestaurantRequest } from "./use-create-restaurant-request";
 
-type CreateRestaurantErrors = {
-  address?: string;
-  description?: string;
+type CreateRestaurantErrors = RestaurantFormErrors & {
   imageFile?: string;
-  name?: string;
 };
 
 type CreationStatus = "idle" | "success" | "error";
-
-function validateRequiredFields(
-  name: string,
-  address: string,
-  description: string,
-): CreateRestaurantErrors {
-  const errors: CreateRestaurantErrors = {};
-
-  if (!name.trim()) {
-    errors.name = "Restaurant name is required.";
-  }
-
-  if (!address.trim()) {
-    errors.address = "Restaurant address is required.";
-  }
-
-  if (!description.trim()) {
-    errors.description = "Restaurant description is required.";
-  }
-
-  return errors;
-}
 
 function isValidRestaurantId(id: unknown): id is number | string {
   if (typeof id === "number") {
@@ -54,6 +33,10 @@ function isValidRestaurantId(id: unknown): id is number | string {
 }
 
 export function useCreateRestaurantForm() {
+  const {
+    createRestaurantRequest,
+    isPending,
+  } = useCreateRestaurantRequest();
   const [address, setAddress] = useState("");
   const [createdRestaurantId, setCreatedRestaurantId] = useState<
     number | string | null
@@ -61,7 +44,6 @@ export function useCreateRestaurantForm() {
   const [description, setDescription] = useState("");
   const [errors, setErrors] = useState<CreateRestaurantErrors>({});
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-  const [isPending, setIsPending] = useState(false);
   const [name, setName] = useState("");
   const [status, setStatus] = useState<CreationStatus>("idle");
 
@@ -148,25 +130,24 @@ export function useCreateRestaurantForm() {
       return;
     }
 
-    const nextErrors = validateRequiredFields(name, address, description);
+    const nextErrors = validateRestaurantForm(name, address, description);
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
       return;
     }
 
-    setIsPending(true);
     setCreatedRestaurantId(null);
     setStatus("idle");
 
     try {
-      const restaurant = await createRestaurant({
+      const restaurant = await createRestaurantRequest({
         name: name.trim(),
         address: address.trim(),
         description: description.trim(),
       });
 
-      if (!isValidRestaurantId(restaurant.id)) {
+      if (!restaurant || !isValidRestaurantId(restaurant.id)) {
         setStatus("error");
         return;
       }
@@ -175,8 +156,6 @@ export function useCreateRestaurantForm() {
       setStatus("success");
     } catch {
       setStatus("error");
-    } finally {
-      setIsPending(false);
     }
   };
 
