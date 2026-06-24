@@ -17,3 +17,13 @@ export type RestaurantDetail = {
   averageRating: number | null;
   commentsCount?: number;
 };
+
+export type CreateRestaurantRequest = {
+  name: string;
+  address: string;
+  description: string;
+};
+
+export type CreateRestaurantResponse = {
+  id?: number | string;
+};
