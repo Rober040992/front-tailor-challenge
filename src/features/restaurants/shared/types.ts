@@ -17,6 +17,7 @@ export type RestaurantDetail = {
   averageRating: number | null;
   canEdit: boolean;
   commentsCount?: number;
+  operatingHours?: Record<string, string>;
   ownerId?: number;
 };
 

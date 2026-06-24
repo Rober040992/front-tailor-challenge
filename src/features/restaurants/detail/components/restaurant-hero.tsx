@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 import type { RestaurantDetail } from "../../shared/types";
@@ -39,6 +40,12 @@ export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
           <p className="mx-auto mt-5 max-w-2xl text-base font-medium text-white/85 sm:text-xl">
             {restaurant.address}
           </p>
+          <Link
+            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-tailor-white px-8 py-3 font-bold text-tailor-black transition hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            href={`/restaurants/${restaurant.id}/availability`}
+          >
+            Check availability
+          </Link>
         </div>
       </div>
     </header>
