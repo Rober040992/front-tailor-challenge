@@ -1,24 +1,28 @@
-## Spec: Restaurant Detail Page
+## Spec: Restaurant Detail Owner Actions and Update Page
 
 **Goal:**
 
-Create a public restaurant detail page where users can view the selected restaurant information and its public comments.
+Extend the existing restaurant detail page with owner-only edit and delete actions.
 
-This feature covers read-only restaurant detail, read-only comments, and a non-interactive reservation section placeholder.
-
-It does not include comment creation, comment editing, comment deletion, availability requests, slot selection, or reservation creation.
+Add an owner-only update restaurant page using the same visual style as the create restaurant form.
 
 **Endpoint(s):**
 
-Frontend route:
+Existing frontend route:
 
 GET /restaurants/:restaurantId
+
+New frontend route:
+
+GET /restaurants/:restaurantId/edit
 
 Backend endpoints consumed:
 
 GET /restaurants/:id
 
-GET /restaurants/:restaurantId/comments
+PATCH /restaurants/:id
+
+DELETE /restaurants/:id
 
 **Input:**
 
@@ -26,114 +30,104 @@ Route param:
 
 restaurantId: number
 
+Editable restaurant fields:
+
+- `name`
+- `address`
+- `description`
+
+Request body sent by `PATCH /restaurants/:id`:
+
+```json
+{
+  "name": "string",
+  "address": "string",
+  "description": "string"
+}
+```
+
+The update form must not send image data.
+
 **Output:**
 
-The page must display the selected restaurant information:
+Restaurant detail responses include:
 
-- restaurant.image
-- restaurant.name
-- restaurant.address
-- restaurant.description
-- restaurant.averageRating, when available
-- restaurant.commentsCount, when available
+- ownerId
+- canEdit
 
-The page must display the restaurant public comments list.
+The existing restaurant detail page must show edit and delete actions only when `canEdit === true`.
 
-Each comment item must display:
+The existing restaurant detail page must hide edit and delete actions when `canEdit === false`.
 
-- comment.name
-- comment.rating
-- comment.body
+The edit action must navigate to:
 
-- The comment author name is shown on the left side.
-- The comment content is shown on the right side.
-- The rating is shown above the comment body.
-- The rating is read-only.
-- The rating is displayed visually with filled and unfilled dots or stars.
-- Each comment has a blue separator line at the bottom.
-- No avatar is required.
-- No comment date is required.
-- No edit or delete buttons are shown in this feature.
+```txt
+/restaurants/:restaurantId/edit
+```
 
+The update page must render a form with:
 
-- Large restaurant image at the top. restaurant.image
-- Restaurant name centered over the image.
-- Restaurant address centered below the name.
-- Dark visual style consistent with the current app UI.
+- `name`
+- `address`
+- `description`
 
-The page must display a reservation-related section:
-
-- The section is a non-interactive placeholder for the future reservation flow.
-- The section must not display date, party-size, or slot controls.
-- The section must not request availability.
-- The section must not allow slot selection.
-- The section must not display a reservation submission action.
-- The section must not create a reservation.
+The update page must use the same visual style as the create restaurant form.
 
 **Business rules:**
 
-- The page is public.
-- Users do not need to be authenticated to view restaurant detail.
-- Users do not need to be authenticated to view restaurant comments.
-- Comments are read-only in this feature.
-- The frontend must fetch the restaurant detail from the backend.
-- The frontend must fetch the restaurant comments from the backend.
-- The frontend must not invent missing restaurant data.
-- The frontend must not invent missing comments.
-- The frontend must not calculate restaurant rating manually in this feature.
-- If restaurant averageRating is null, the UI must not show a fake restaurant rating.
-- If restaurant commentsCount is unavailable, the UI must not invent a value.
-- Comment creation is intentionally out of scope.
-- Comment editing is intentionally out of scope.
-- Comment deletion is intentionally out of scope.
-- Availability logic, slot selection, and reservation creation are intentionally out of scope.
+- The frontend must use `canEdit` to control edit and delete action visibility.
+- The frontend must not calculate edit or delete permissions using `ownerId`.
+- The frontend must not parse JWT or use stored auth data to decide edit or delete visibility.
+- If cookies are not sent, the backend returns `canEdit: false`.
+- The backend remains the source of truth for ownership.
+- `PATCH /restaurants/:id` must send only `name`, `address` and `description`.
+- `PATCH /restaurants/:id` only works for the owner.
+- `DELETE /restaurants/:id` only works for the owner.
+- Non-owner update or delete returns 403 Forbidden.
+- Missing restaurant returns 404 Not Found.
+- Do not invent backend fields.
+- Do not invent endpoints.
 
 **Validation:**
 
 - restaurantId must be treated as a numeric route param.
 - If restaurantId is invalid, the page must show an error state.
-- If a comment rating is missing or outside the expected range, the UI must avoid crashing.
-- If a restaurant image is missing or invalid, the UI must show a safe fallback or keep the layout usable.
+- `name` is required for update.
+- `address` is required for update.
+- `description` is required for update.
+- Empty or whitespace-only update values are invalid.
+- The update submit action must be disabled while submitting.
 
 **Edge cases:**
 
+- Restaurant detail response has `canEdit: true`.
+- Restaurant detail response has `canEdit: false`.
 - Restaurant request is loading.
-- Comments request is loading.
 - Restaurant request fails.
-- Comments request fails.
 - Restaurant does not exist.
-- Restaurant exists but has no comments.
-- Restaurant image is missing or invalid.
-- Comment rating is missing.
-- Comment rating is outside the expected range.
-- Comments array is empty.
+- Update request returns 403 Forbidden.
+- Update request returns 404 Not Found.
+- Delete request returns 403 Forbidden.
+- Delete request returns 404 Not Found.
+
+**Error handling:**
+
+- 403 from update or delete must be shown as: `You cannot edit this restaurant.`
+- 404 from restaurant detail, update, or delete must be shown as restaurant not found.
+- Failed update or delete requests must not be treated as successful owner actions.
 
 **Tests:**
 
-- Renders restaurant hero with image, name and address.
-- Renders restaurant description.
-- Renders restaurant average rating when available.
-- Does not render a fake restaurant rating when averageRating is null.
-- Renders restaurant comments count when available.
-- Renders comments list.
-- Renders comment author name on the left side.
-- Renders read-only rating above the comment body.
-- Renders comment body.
-- Renders blue separator between comments.
-- Shows restaurant loading state.
-- Shows comments loading state.
-- Shows an error state when restaurantId is invalid.
-- Shows restaurant error state.
-- Shows comments error state.
-- Shows not-found state when the restaurant does not exist.
-- Shows empty comments state when there are no comments.
-- Does not render comment form.
-- Does not render submit comment button.
-- Does not render edit comment button.
-- Does not render delete comment button.
-- Renders a non-interactive reservation section placeholder.
-- Does not render date, party-size, or slot controls.
-- Does not request availability.
-- Does not allow slot selection.
-- Does not render a reservation submission action.
-- Does not create a reservation.
+- Renders edit and delete actions when `canEdit === true`.
+- Does not render edit or delete actions when `canEdit === false`.
+- Does not use `ownerId` to decide edit or delete visibility.
+- Edit action navigates to `/restaurants/:restaurantId/edit`.
+- Update page renders the restaurant form in the create form style.
+- Update form sends only `name`, `address` and `description` to `PATCH /restaurants/:id`.
+- Update form does not send image data.
+- Disables update submit while the request is pending.
+- Shows validation errors when update required fields are empty.
+- Shows `You cannot edit this restaurant.` for update 403.
+- Shows restaurant not found for update 404.
+- Shows `You cannot edit this restaurant.` for delete 403.
+- Shows restaurant not found for delete 404.

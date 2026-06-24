@@ -15,7 +15,9 @@ export type RestaurantDetail = {
   description: string;
   image: string | null;
   averageRating: number | null;
+  canEdit: boolean;
   commentsCount?: number;
+  ownerId?: number;
 };
 
 export type CreateRestaurantRequest = {
@@ -26,4 +28,10 @@ export type CreateRestaurantRequest = {
 
 export type CreateRestaurantResponse = {
   id?: number | string;
+};
+
+export type UpdateRestaurantRequest = {
+  name: string;
+  address: string;
+  description: string;
 };

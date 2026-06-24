@@ -11,8 +11,10 @@ import {
 } from "@/shared/components/states";
 import type { ApiError } from "@/shared/lib/api-client";
 
+import { useDeleteRestaurant } from "../hooks/use-delete-restaurant";
 import { useRestaurant } from "../hooks/use-restaurant";
 import { RestaurantHero } from "./restaurant-hero";
+import { RestaurantResultPopup } from "./restaurant-result-popup";
 import { StarRating } from "./star-rating";
 
 type RestaurantDetailPageProps = {
@@ -32,6 +34,12 @@ export function RestaurantDetailPage({
   restaurantId,
 }: RestaurantDetailPageProps) {
   const { data: restaurant, error, isLoading } = useRestaurant(restaurantId);
+  const {
+    closeErrorPopup,
+    errorMessage: deleteErrorMessage,
+    handleDelete,
+    isPending: isDeletePending,
+  } = useDeleteRestaurant(restaurantId);
 
   if (isLoading) {
     return (
@@ -113,6 +121,24 @@ export function RestaurantDetailPage({
             <p className="mt-5 max-w-3xl whitespace-pre-wrap text-base leading-8 text-tailor-muted sm:text-lg">
               {restaurant.description}
             </p>
+            {restaurant.canEdit === true ? (
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-tailor-white px-8 py-3 font-bold text-tailor-black transition hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                  href={`/restaurants/${restaurant.id}/edit`}
+                >
+                  Edit restaurant
+                </Link>
+                <button
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-tailor-error px-8 py-3 font-bold text-tailor-error transition hover:bg-tailor-error hover:text-tailor-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tailor-error disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={isDeletePending}
+                  onClick={handleDelete}
+                  type="button"
+                >
+                  {isDeletePending ? "Deleting..." : "Delete restaurant"}
+                </button>
+              </div>
+            ) : null}
           </div>
 
           {(hasAverageRating || hasCommentsCount) && (
@@ -156,6 +182,14 @@ export function RestaurantDetailPage({
           <CommentList restaurantId={restaurantId} />
         </section>
       </div>
+
+      {deleteErrorMessage ? (
+        <RestaurantResultPopup
+          buttonLabel="Back"
+          message={deleteErrorMessage}
+          onClick={closeErrorPopup}
+        />
+      ) : null}
     </main>
   );
 }
