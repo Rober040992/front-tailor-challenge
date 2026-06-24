@@ -57,7 +57,7 @@ Availability response:
 type AvailabilitySlot = {
   time: string;
   availableSeats: number;
-  status: "available" | "booked" | "unavailable";
+  available: boolean;
 };
 
 type AvailabilityResponse = {
@@ -109,8 +109,7 @@ No calendar dependency is approved for this feature.
 - The frontend must not derive final availability from `defaultSlotCapacity`.
 - The frontend must not derive final availability from `reservedSeats`.
 - The frontend must not trust `bookedSlots` as the final source of availability.
-- Slots with `status: "booked"` must be disabled and marked as `Booked`.
-- Slots with `status: "unavailable"` must be disabled.
+- Slots with `available: false` must be disabled.
 - Slots where `availableSeats < partySize` must be disabled.
 - Available slots must be clearly distinguishable from disabled slots.
 - Reservation creation is out of scope.
@@ -161,8 +160,7 @@ Manual checks only for this feature because the frontend test infrastructure is 
 - Invalid party size shows a validation error.
 - Availability request uses `date` and `partySize`.
 - Slots are not selectable before the backend availability response succeeds.
-- Booked slots render disabled with `Booked`.
-- Unavailable slots render disabled.
+- Slots with `available: false` render disabled.
 - Slots with `availableSeats < partySize` render disabled.
 - Empty slots response shows an empty state.
 - Loading and error states are visible for failed restaurant or availability requests.

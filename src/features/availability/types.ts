@@ -1,12 +1,7 @@
-export type AvailabilitySlotStatus =
-  | "available"
-  | "booked"
-  | "unavailable";
-
 export type AvailabilitySlot = {
   time: string;
   availableSeats: number;
-  status: AvailabilitySlotStatus;
+  available: boolean;
 };
 
 export type AvailabilityResponse = {

@@ -2,9 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { UserMenuDropdown } from "@/features/auth/components/user-menu-dropdown";
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { ReservationConfirmationModal } from "@/features/reservations/components/reservation-confirmation-modal";
+import { ReservationFeedbackPanel } from "@/features/reservations/components/reservation-feedback-panel";
+import { useCreateReservationFromSlot } from "@/features/reservations/hooks/use-create-reservation-from-slot";
 import { useRestaurant } from "@/features/restaurants/detail/hooks/use-restaurant";
 import { isRestaurantNotFoundError } from "@/features/restaurants/shared/lib/get-restaurant-request-error-message";
 import {
@@ -14,7 +19,7 @@ import {
 } from "@/shared/components/states";
 
 import { useAvailability } from "../hooks/use-availability";
-import type { AvailabilitySlot } from "../types";
+import { getSlotLabel, isSlotDisabled } from "../lib/availability-slot";
 
 const INITIAL_MONTH = 6;
 const INITIAL_YEAR = 2026;
@@ -80,39 +85,16 @@ function parsePartySize(value: string): number | null {
   return partySize;
 }
 
-function getSlotLabel(slot: AvailabilitySlot, partySize: number | null): string {
-  if (slot.status === "booked") {
-    return "Booked";
-  }
-
-  if (slot.status === "unavailable") {
-    return "Unavailable";
-  }
-
-  if (partySize !== null && slot.availableSeats < partySize) {
-    return "Unavailable";
-  }
-
-  return `${slot.availableSeats} seats`;
-}
-
-function isSlotDisabled(
-  slot: AvailabilitySlot,
-  partySize: number | null,
-): boolean {
-  return (
-    slot.status !== "available" ||
-    partySize === null ||
-    slot.availableSeats < partySize
-  );
-}
-
 export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
+  const router = useRouter();
+  const {
+    isLoading: isAuthLoading,
+    user,
+  } = useAuth();
   const [selectedMonth, setSelectedMonth] = useState(INITIAL_MONTH);
   const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [partySizeInput, setPartySizeInput] = useState("");
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const partySize = partySizeInput.trim()
     ? parsePartySize(partySizeInput)
@@ -129,7 +111,26 @@ export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
     data: availability,
     error: availabilityError,
     isLoading: isAvailabilityLoading,
+    mutate: refreshAvailability,
   } = useAvailability(restaurantId, selectedDate, partySize);
+  const {
+    clearReservationState,
+    closeReservationModal,
+    confirmReservation,
+    handleSlotSelect,
+    isReservationPending,
+    reservationFeedback,
+    selectedSlot,
+  } = useCreateReservationFromSlot({
+    availability,
+    isAuthLoading,
+    isAvailabilityLoading,
+    partySize,
+    refreshAvailability,
+    restaurantId,
+    selectedDate,
+    user,
+  });
 
   const calendarCells = useMemo(
     () => getCalendarCells(selectedYear, selectedMonth),
@@ -140,10 +141,11 @@ export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
     selectedWeekday && restaurant?.operatingHours
       ? restaurant.operatingHours[selectedWeekday]
       : null;
+  const selectedTime = selectedSlot?.time ?? null;
 
   function handlePreviousMonth() {
     setSelectedDate(null);
-    setSelectedTime(null);
+    clearReservationState();
     setSelectedMonth((currentMonth) => {
       if (currentMonth === 0) {
         setSelectedYear((currentYear) => currentYear - 1);
@@ -157,7 +159,7 @@ export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
 
   function handleNextMonth() {
     setSelectedDate(null);
-    setSelectedTime(null);
+    clearReservationState();
     setSelectedMonth((currentMonth) => {
       if (currentMonth === 11) {
         setSelectedYear((currentYear) => currentYear + 1);
@@ -171,12 +173,12 @@ export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
 
   function handleDateSelect(date: string) {
     setSelectedDate(date);
-    setSelectedTime(null);
+    clearReservationState();
   }
 
   function handlePartySizeChange(value: string) {
     setPartySizeInput(value);
-    setSelectedTime(null);
+    clearReservationState();
   }
 
   if (isRestaurantLoading) {
@@ -362,6 +364,13 @@ export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
             Time slots
           </h2>
 
+          {reservationFeedback && !selectedSlot ? (
+            <ReservationFeedbackPanel
+              feedback={reservationFeedback}
+              onLoginClick={() => router.push("/login")}
+            />
+          ) : null}
+
           {!selectedDate || partySize === null ? (
             <div className="mt-5 rounded-tailor-md border border-tailor-border bg-tailor-surface p-6">
               <p className="text-sm leading-6 text-tailor-muted">
@@ -416,7 +425,7 @@ export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
                     ].join(" ")}
                     disabled={disabled}
                     key={slot.time}
-                    onClick={() => setSelectedTime(slot.time)}
+                    onClick={() => handleSlotSelect(slot)}
                     type="button"
                   >
                     <span className="font-bold">{slot.time}</span>
@@ -430,6 +439,23 @@ export function AvailabilityPage({ restaurantId }: AvailabilityPageProps) {
           ) : null}
         </aside>
       </div>
+
+      {selectedSlot ? (
+        <ReservationConfirmationModal
+          isAuthLoading={isAuthLoading}
+          isAvailabilityLoading={isAvailabilityLoading}
+          isReservationPending={isReservationPending}
+          onClose={closeReservationModal}
+          onConfirm={confirmReservation}
+          onLoginClick={() => router.push("/login")}
+          partySize={partySize}
+          reservationFeedback={reservationFeedback}
+          restaurantName={restaurant.name}
+          selectedDate={selectedDate}
+          selectedSlot={selectedSlot}
+          userIsAuthenticated={Boolean(user)}
+        />
+      ) : null}
     </main>
   );
 }
