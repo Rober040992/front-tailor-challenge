@@ -14,3 +14,8 @@ export type CreateRestaurantCommentRequest = {
   rating: number;
   body: string;
 };
+
+export type UpdateRestaurantCommentRequest = {
+  rating: number;
+  body: string;
+};
