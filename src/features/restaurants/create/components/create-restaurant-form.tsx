@@ -29,15 +29,16 @@ export function CreateRestaurantForm() {
     closeErrorPopup,
     description,
     errors,
-    handleImageChange,
     handleImagePreviewError,
     handleSubmit,
+    image,
     imagePreviewUrl,
     isPending,
     name,
     restaurantUrl,
     setAddress,
     setDescription,
+    setImageUrl,
     setName,
     status,
   } = useCreateRestaurantForm();
@@ -73,13 +74,13 @@ export function CreateRestaurantForm() {
         onSubmit={handleSubmit}
       >
         <div>
-          <label
-            className="group relative flex min-h-88 cursor-pointer items-center justify-center rounded-tailor-lg overflow-hidden bg-tailor-white text-tailor-black transition hover:bg-white/90 focus-within:ring-2 focus-within:ring-tailor-blue sm:min-h-112"
-            htmlFor="imageFile"
+          <div
+            className="relative flex min-h-88 items-center justify-center overflow-hidden rounded-tailor-lg bg-tailor-white text-tailor-black sm:min-h-112"
+            aria-label="Restaurant image preview"
           >
             {imagePreviewUrl ? (
               <Image
-                alt="Selected restaurant preview"
+                alt="Restaurant image preview"
                 className="object-cover"
                 fill
                 onError={handleImagePreviewError}
@@ -88,19 +89,9 @@ export function CreateRestaurantForm() {
                 unoptimized
               />
             ) : (
-              <span className="text-xl font-bold">Add image</span>
+              <span className="text-xl font-bold">Image will show here</span>
             )}
-            <input
-              accept="image/*"
-              className="sr-only"
-              disabled={isPending}
-              id="imageFile"
-              name="imageFile"
-              onChange={handleImageChange}
-              type="file"
-            />
-          </label>
-          <FieldError id="imageFile-error" message={errors.imageFile} />
+          </div>
         </div>
 
         <div className="space-y-7">
@@ -171,6 +162,29 @@ export function CreateRestaurantForm() {
               value={description}
             />
             <FieldError id="description-error" message={errors.description} />
+          </div>
+
+          <div>
+            <label
+              className="mb-3 block text-base font-bold"
+              htmlFor="image"
+            >
+              Restaurant image URL
+            </label>
+            <input
+              aria-describedby={errors.image ? "image-error" : undefined}
+              aria-invalid={Boolean(errors.image)}
+              autoComplete="url"
+              className="min-h-12 w-full rounded-full border border-tailor-blue bg-tailor-blue px-5 py-3 text-tailor-white outline-none transition placeholder:text-white/65 hover:border-white focus:border-white focus:ring-2 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isPending}
+              id="image"
+              name="image"
+              onChange={(event) => setImageUrl(event.target.value)}
+              placeholder="https://example.com/image.jpg"
+              type="url"
+              value={image}
+            />
+            <FieldError id="image-error" message={errors.image} />
           </div>
 
           <button

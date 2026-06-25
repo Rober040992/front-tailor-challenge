@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  type ChangeEvent,
-  type FormEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { type FormEvent, useMemo, useState } from "react";
 
 import {
   type RestaurantFormErrors,
@@ -15,7 +9,7 @@ import {
 import { useCreateRestaurantRequest } from "./use-create-restaurant-request";
 
 type CreateRestaurantErrors = RestaurantFormErrors & {
-  imageFile?: string;
+  image?: string;
 };
 
 type CreationStatus = "idle" | "success" | "error";
@@ -32,6 +26,16 @@ function isValidRestaurantId(id: unknown): id is number | string {
   return false;
 }
 
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function useCreateRestaurantForm() {
   const {
     createRestaurantRequest,
@@ -43,17 +47,10 @@ export function useCreateRestaurantForm() {
   >(null);
   const [description, setDescription] = useState("");
   const [errors, setErrors] = useState<CreateRestaurantErrors>({});
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [image, setImage] = useState("");
+  const [imagePreviewFailed, setImagePreviewFailed] = useState(false);
   const [name, setName] = useState("");
   const [status, setStatus] = useState<CreationStatus>("idle");
-
-  useEffect(() => {
-    return () => {
-      if (imagePreviewUrl) {
-        URL.revokeObjectURL(imagePreviewUrl);
-      }
-    };
-  }, [imagePreviewUrl]);
 
   const restaurantUrl = useMemo(() => {
     if (!createdRestaurantId) {
@@ -63,60 +60,23 @@ export function useCreateRestaurantForm() {
     return `/restaurants/${createdRestaurantId}`;
   }, [createdRestaurantId]);
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const [file] = Array.from(event.target.files ?? []);
+  const trimmedImage = image.trim();
+  const imagePreviewUrl =
+    trimmedImage && isValidHttpUrl(trimmedImage) && !imagePreviewFailed
+      ? trimmedImage
+      : null;
 
+  const setImageUrl = (value: string) => {
+    setImage(value);
+    setImagePreviewFailed(false);
     setErrors((currentErrors) => ({
       ...currentErrors,
-      imageFile: undefined,
+      image: undefined,
     }));
-
-    if (!file) {
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      event.target.value = "";
-      setErrors((currentErrors) => ({
-        ...currentErrors,
-        imageFile: "Select a valid image file.",
-      }));
-      return;
-    }
-
-    let nextPreviewUrl: string;
-
-    try {
-      nextPreviewUrl = URL.createObjectURL(file);
-    } catch {
-      event.target.value = "";
-      setImagePreviewUrl((currentPreviewUrl) => {
-        if (currentPreviewUrl) {
-          URL.revokeObjectURL(currentPreviewUrl);
-        }
-
-        return null;
-      });
-      return;
-    }
-
-    setImagePreviewUrl((currentPreviewUrl) => {
-      if (currentPreviewUrl) {
-        URL.revokeObjectURL(currentPreviewUrl);
-      }
-
-      return nextPreviewUrl;
-    });
   };
 
   const handleImagePreviewError = () => {
-    setImagePreviewUrl((currentPreviewUrl) => {
-      if (currentPreviewUrl) {
-        URL.revokeObjectURL(currentPreviewUrl);
-      }
-
-      return null;
-    });
+    setImagePreviewFailed(true);
   };
 
   const closeErrorPopup = () => {
@@ -130,7 +90,16 @@ export function useCreateRestaurantForm() {
       return;
     }
 
-    const nextErrors = validateRestaurantForm(name, address, description);
+    const nextErrors: CreateRestaurantErrors = validateRestaurantForm(
+      name,
+      address,
+      description,
+    );
+
+    if (trimmedImage && !isValidHttpUrl(trimmedImage)) {
+      nextErrors.image = "Image must be a valid http or https URL.";
+    }
+
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -145,6 +114,7 @@ export function useCreateRestaurantForm() {
         name: name.trim(),
         address: address.trim(),
         description: description.trim(),
+        ...(trimmedImage ? { image: trimmedImage } : {}),
       });
 
       if (!restaurant || !isValidRestaurantId(restaurant.id)) {
@@ -164,15 +134,16 @@ export function useCreateRestaurantForm() {
     closeErrorPopup,
     description,
     errors,
-    handleImageChange,
     handleImagePreviewError,
     handleSubmit,
+    image,
     imagePreviewUrl,
     isPending,
     name,
     restaurantUrl,
     setAddress,
     setDescription,
+    setImageUrl,
     setName,
     status,
   };

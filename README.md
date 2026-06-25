@@ -218,6 +218,7 @@ Static assets used by the frontend.
 - Own comment update and delete actions.
 - Restaurant creation.
 - Owner-controlled restaurant edit and delete actions based on backend-provided permissions.
+- Restaurant creation persists an optional image URL through the backend `image` field.
 
 ## User Flows
 
@@ -377,6 +378,8 @@ npm run build
 - HTTP requests go through a shared API client.
 - Authentication uses backend-controlled HttpOnly cookies.
 - The frontend does not store, read, or parse JWTs.
+- Restaurant image persistence in this MVP is URL-based: `POST /restaurants` sends optional `image` as a string in the JSON body. This keeps the MVP focused on restaurant CRUD without adding file storage infrastructure.
+- The frontend does not upload restaurant image files in this MVP, does not use `multipart/form-data`, does not add Multer flows, and does not perform direct uploads to external storage.
 - MapLibre GL is used for the restaurant map.
 - Figma is treated as a visual reference, not as a pixel-perfect target.
 - The backend remains the source of truth for authentication, authorization, ownership, availability, reservation capacity, reservation status, and business rules.
@@ -384,7 +387,7 @@ npm run build
 ## Current Limitations
 
 - Backend setup, database setup, seed data, migrations, and test user credentials are documented in the backend repository, not in this frontend repository.
-- Restaurant image upload on create is a local preview only in the current frontend; the selected image is not sent to the backend.
+- Restaurant image creation accepts an optional URL string only; local file upload is outside this MVP because it would require upload/storage infrastructure that is intentionally not part of this version.
 - End-to-end tests are not included in this repository.
 
 ## Troubleshooting

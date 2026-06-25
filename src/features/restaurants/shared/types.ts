@@ -27,6 +27,7 @@ export type CreateRestaurantRequest = {
   name: string;
   address: string;
   description: string;
+  image?: string;
 };
 
 export type CreateRestaurantResponse = {
