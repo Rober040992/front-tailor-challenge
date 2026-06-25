@@ -63,7 +63,7 @@ Unauthenticated state:
 - The user menu must not read or decode the JWT.
 - When the auth provider has a user, show the username on every supported screen that renders the dropdown.
 - When the auth provider has no user, show the register link instead.
-- My account navigates to `/account`.
+- My account navigates to `/my-account`.
 - Add restaurant navigates to `/restaurants/new`.
 - Log out calls POST `/auth/logout`.
 - Successful logout redirects to `/login`.

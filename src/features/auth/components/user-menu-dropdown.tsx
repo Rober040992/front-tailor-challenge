@@ -58,7 +58,7 @@ function AuthenticatedUserMenuDropdown({
       )}
       triggerButtonClassName="inline-flex min-h-11 items-center rounded-full border border-tailor-border bg-tailor-surface px-3 text-sm font-bold text-tailor-white transition hover:border-tailor-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tailor-blue"
     >
-      <Link className={userMenuItemClassName} href="/account" role="menuitem">
+      <Link className={userMenuItemClassName} href="/my-account" role="menuitem">
         My account
       </Link>
       <Link
