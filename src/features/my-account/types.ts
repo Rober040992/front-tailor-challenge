@@ -1,4 +1,4 @@
-export type MyAccountFavouriteRestaurant = {
+type MyAccountFavouriteRestaurant = {
   id: number;
   name: string;
   address: string;

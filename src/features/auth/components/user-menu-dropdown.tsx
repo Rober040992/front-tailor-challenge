@@ -12,7 +12,7 @@ import { useAuth } from "../hooks/use-auth";
 const ARROW_DOWN = "\u2193";
 const ARROW_UP = "\u2191";
 
-export type UserMenuDropdownProps = Readonly<{
+type UserMenuDropdownProps = Readonly<{
   username: string;
 }>;
 
