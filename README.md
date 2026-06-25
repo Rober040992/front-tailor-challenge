@@ -25,7 +25,7 @@ The backend repository has its own README for database setup, seed data, migrati
 
 ## Environment Variables
 
-Create a `.env` file in the project root from `.env.example`, then confirm it uses the expected local backend URL.
+Create a `.env` file in the project root from `.env.example`, then confirm it uses the expected backend URL for how the frontend is running.
 
 ```bash
 cp .env.example .env
@@ -37,16 +37,16 @@ On Windows PowerShell:
 Copy-Item .env.example .env
 ```
 
-Expected local values:
+Expected local values when the frontend runs directly on the host machine:
 
 ```env
 BACKEND_API_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=/api
 ```
 
-`BACKEND_API_URL` is used by `next.config.ts` to rewrite frontend `/api/*` requests to the backend.
+`BACKEND_API_URL` is read by the runtime API proxy route at `src/app/api/[...path]/route.ts`. Frontend `/api/*` requests are proxied to `${BACKEND_API_URL}/*`.
 
-`NEXT_PUBLIC_API_URL` is used by the shared API client. The current example value, `/api`, keeps browser requests going through the Next.js rewrite.
+`NEXT_PUBLIC_API_URL` is used by the shared API client. The value must remain `/api` so browser requests go through the frontend API proxy.
 
 ## Local Ports
 
@@ -54,7 +54,7 @@ With the current repository configuration:
 
 - Frontend: `http://localhost:3001`
 - Backend: `http://localhost:3000`
-- Backend URL used by rewrites: `BACKEND_API_URL=http://localhost:3000`
+- Backend URL used by the runtime API proxy: `BACKEND_API_URL=http://localhost:3000`
 - Client API base URL: `NEXT_PUBLIC_API_URL=/api`
 
 If the backend runs on a different port, update `BACKEND_API_URL` in `.env` to match the backend base URL.
@@ -88,6 +88,74 @@ npm run dev -- -p 3001
 ```
 
 Open [http://localhost:3001](http://localhost:3001).
+
+## Docker
+
+The Docker setup runs only the frontend. The backend must already be running separately.
+
+`NEXT_PUBLIC_API_URL` must stay `/api`. The browser calls the frontend at `/api/*`, and the frontend runtime proxy forwards those requests to `BACKEND_API_URL`.
+
+When the frontend runs inside Docker and the backend runs on the host machine, use:
+
+```env
+BACKEND_API_URL=http://host.docker.internal:3000
+NEXT_PUBLIC_API_URL=/api
+```
+
+Do not use `http://localhost:3000` for the backend from inside the frontend container. Inside a container, `localhost` points to the frontend container itself, not the host machine.
+
+Other valid backend URL examples:
+
+- Backend in the same Docker network: `BACKEND_API_URL=http://backend:3000`
+- Deployed backend: `BACKEND_API_URL=https://api.example.com`
+
+### Essential Docker Flow
+
+Start the backend using the backend repository instructions, then build the frontend image:
+
+```bash
+npm run docker:build
+```
+
+This creates a local Docker image for the frontend using `npm ci`, `npm run build`, and the Next.js standalone output.
+
+Run the frontend container with Compose:
+
+```bash
+npm run docker:up
+```
+
+This builds the image if needed, starts the frontend on [http://localhost:3001](http://localhost:3001), and uses the local Docker backend URL from `docker-compose.yml`.
+
+Open [http://localhost:3001](http://localhost:3001), then verify that frontend API calls use `/api` and are proxied to `BACKEND_API_URL`.
+
+Stop the local frontend container with:
+
+```bash
+npm run docker:down
+```
+
+This stops and removes the local frontend container created by Compose.
+
+### Docker Script Reference
+
+```bash
+npm run docker:build
+```
+
+Builds the local frontend Docker image.
+
+```bash
+npm run docker:up
+```
+
+Builds and starts the local frontend Compose service.
+
+```bash
+npm run docker:down
+```
+
+Stops and removes the local frontend Compose service.
 
 ## Available Scripts
 
@@ -126,6 +194,14 @@ npm run test
 ```
 
 Runs the Vitest test suite.
+
+```bash
+npm run docker:build
+npm run docker:up
+npm run docker:down
+```
+
+Builds, starts, and stops the local frontend Docker image and container.
 
 ## Test Credentials
 
@@ -409,7 +485,7 @@ Confirm that:
 
 - The backend server is running.
 - `BACKEND_API_URL` points to the backend base URL.
-- `NEXT_PUBLIC_API_URL` points to `/api` for the Next.js rewrite setup.
+- `NEXT_PUBLIC_API_URL` points to `/api` for the frontend runtime proxy.
 - The backend supports cookie-based authentication for the frontend origin.
 
 ### Authenticated Requests Do Not Work

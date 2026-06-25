@@ -1,0 +1,12 @@
+services:
+  frontend:
+    image: restaurant-reservation-frontend
+    build:
+      context: .
+    ports:
+      - "3001:3001"
+    environment:
+      BACKEND_API_URL: http://host.docker.internal:3000
+      NEXT_PUBLIC_API_URL: /api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
