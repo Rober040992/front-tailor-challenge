@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { MouseEvent } from "react";
 import { useState } from "react";
 
 import { StarRating } from "../../shared/components/star-rating";
@@ -10,19 +11,42 @@ import type { RestaurantListItem } from "../../shared/types";
 const FALLBACK_IMAGE = "/restaurant-miniature.png";
 
 type RestaurantCardProps = {
+  isSelected: boolean;
+  onSelect: (restaurant: RestaurantListItem) => void;
   restaurant: RestaurantListItem;
 };
 
-export function RestaurantCard({ restaurant }: RestaurantCardProps) {
+export function RestaurantCard({
+  isSelected,
+  onSelect,
+  restaurant,
+}: RestaurantCardProps) {
   const [imageSource, setImageSource] = useState(
     restaurant.image?.trim() || FALLBACK_IMAGE,
   );
 
+  function handleClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (isSelected) {
+      return;
+    }
+
+    event.preventDefault();
+    onSelect(restaurant);
+  }
+
   return (
-    <article>
+    <article data-restaurant-item-id={restaurant.id}>
       <Link
-        className="group grid overflow-hidden rounded-tailor-md border border-tailor-border bg-tailor-surface transition hover:border-tailor-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tailor-blue sm:grid-cols-[11rem_1fr]"
+        aria-label={
+          isSelected
+            ? `Open ${restaurant.name}`
+            : `Select ${restaurant.name} on the map`
+        }
+        className={`group grid overflow-hidden rounded-tailor-md border bg-tailor-surface transition hover:border-tailor-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tailor-blue sm:grid-cols-[11rem_1fr] ${
+          isSelected ? "border-tailor-blue" : "border-tailor-border"
+        }`}
         href={`/restaurants/${restaurant.id}`}
+        onClick={handleClick}
       >
         <Image
           alt={restaurant.name}

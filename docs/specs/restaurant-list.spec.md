@@ -35,6 +35,8 @@ type RestaurantListItem = {
   cuisineType: string;
   averageRating: number | null;
   commentsCount: number;
+  lat?: number | null;
+  lng?: number | null;
 };
 ```
 
@@ -43,7 +45,8 @@ The page must display:
 * The Tailor logo using `/Logo.png`.
 * A responsive restaurant list.
 * Restaurant cards rendered from the backend response.
-* A left-side static visual placeholder reserved for a future map.
+* A left-side map area.
+* A placeholder using `/Logo.png` in the left-side section when no restaurant is selected.
 * Loading state.
 * Empty state.
 * Error state.
@@ -63,6 +66,30 @@ Each restaurant card must navigate to:
 /restaurants/:id
 ```
 
+**Map requirements:**
+
+* The map feature must use `maplibre-gl` as the browser map library.
+* The map feature must use OpenFreeMap as the map style provider.
+* The OpenFreeMap style URL must be `https://tiles.openfreemap.org/styles/liberty`.
+* Implementation requires installing `maplibre-gl` with npm.
+* Implementation requires importing `maplibre-gl/dist/maplibre-gl.css` once.
+* The map must use the restaurant coordinates from the backend response.
+* Restaurant coordinates must be passed to MapLibre as `[lng, lat]`, not `[lat, lng]`.
+* If a selected restaurant does not have valid `lat` and `lng` values, the left section must show the `/Logo.png` placeholder.
+* Coordinates with `lat: 0` and `lng: 0` must be treated as missing coordinates and must show the `/Logo.png` placeholder.
+* The map must render only on the client side.
+* The map must not require an API key.
+* The map must not require registration.
+* The map must not require a connection string.
+* The map must not require a deploy-only environment variable.
+
+**UI behavior:**
+
+* On first click over a restaurant item, the item becomes selected and the left section shows the map centered on that restaurant location.
+* If the user clicks outside the selected item, the item is deselected.
+* If the user clicks again on the already selected restaurant item, navigate to `/restaurants/:id`.
+* If no restaurant is selected, the left section shows a placeholder using `/Logo.png`.
+
 **Business rules:**
 
 * The page is public.
@@ -81,8 +108,6 @@ Each restaurant card must navigate to:
 * The rating component must optionally display the numeric value.
 * The rating component must provide an accessible rating label.
 * If `image` is `null`, empty or fails to load, the UI must use `/restaurant-miniature.png`.
-* The left-side section is only a static visual placeholder for a future map.
-* No real map integration is implemented in this feature.
 
 **Validation:**
 
@@ -96,6 +121,10 @@ None.
 * Restaurant image is missing, empty or invalid.
 * Restaurant has `averageRating: null` or `undefined`.
 * Restaurant has an `averageRating` outside the `0–5` range.
+* No restaurant item is selected.
+* A selected restaurant item is deselected by clicking outside it.
+* A selected restaurant does not have valid `lat` and `lng` values.
+* A selected restaurant has `lat: 0` and `lng: 0`.
 
 **Tests:**
 
@@ -114,4 +143,10 @@ Manual checks only for this feature because the frontend test infrastructure is 
 * Rating prop changes transition the overlay width smoothly.
 * The raw `averageRating` reaches the rating component without preprocessing.
 * The page uses `/restaurant-miniature.png` when the restaurant image is missing or invalid.
-* Clicking a restaurant card navigates to `/restaurants/:id`.
+* The left-side section shows the `/Logo.png` placeholder when no restaurant is selected.
+* First click on a restaurant item selects it and centers the map on its location.
+* Restaurant coordinates are passed to MapLibre as `[lng, lat]`.
+* A selected restaurant without valid `lat` and `lng` values shows the `/Logo.png` placeholder.
+* A selected restaurant with `lat: 0` and `lng: 0` shows the `/Logo.png` placeholder.
+* Clicking outside the selected restaurant item deselects it.
+* Clicking the already selected restaurant item navigates to `/restaurants/:id`.

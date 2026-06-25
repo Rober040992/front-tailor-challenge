@@ -6,6 +6,8 @@ export type RestaurantListItem = {
   cuisineType: string;
   averageRating: number | null;
   commentsCount: number;
+  lat?: number | null;
+  lng?: number | null;
 };
 
 export type RestaurantDetail = {
