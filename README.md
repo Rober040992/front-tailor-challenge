@@ -4,6 +4,10 @@ Frontend application for a restaurant reservation product. Users can browse rest
 
 This repository contains only the frontend. The backend API is required for the full app to work locally.
 
+Live frontend:
+
+[https://front-tailor-challenge.onrender.com](https://front-tailor-challenge.onrender.com)
+
 ## Tech Stack
 
 - Next.js 16 with App Router
@@ -112,6 +116,18 @@ Other valid backend URL examples:
 
 ### Render Deployment
 
+The frontend is deployed on Render using the Docker setup in this repository.
+
+Production frontend URL:
+
+[https://front-tailor-challenge.onrender.com](https://front-tailor-challenge.onrender.com)
+
+The deployed frontend is connected to the deployed backend hosted on Railway:
+
+```txt
+https://back-tailor-challenge-production.up.railway.app
+```
+
 For a Docker deploy on Render, configure these environment variables on the Render service:
 
 ```env
@@ -122,6 +138,8 @@ NEXT_PUBLIC_API_URL=/api
 Do not set `BACKEND_API_URL` to `localhost` on Render. The frontend runtime proxy reads `BACKEND_API_URL` inside the running container and forwards `/api/*` requests to that backend.
 
 Render provides the runtime `PORT` environment variable. The Docker image does not force a local port for production.
+
+The Render service uses the free plan. If the project has been inactive for a while, the first request can take a long time while the service wakes up. During that cold start, pages, backend data, and images may load slowly.
 
 ### Essential Docker Flow
 
