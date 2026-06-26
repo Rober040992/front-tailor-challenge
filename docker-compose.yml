@@ -8,5 +8,6 @@ services:
     environment:
       BACKEND_API_URL: http://host.docker.internal:3000
       NEXT_PUBLIC_API_URL: /api
+      PORT: 3001
     extra_hosts:
       - "host.docker.internal:host-gateway"

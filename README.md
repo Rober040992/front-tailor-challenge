@@ -108,6 +108,20 @@ Other valid backend URL examples:
 
 - Backend in the same Docker network: `BACKEND_API_URL=http://backend:3000`
 - Deployed backend: `BACKEND_API_URL=https://api.example.com`
+- Render frontend to Railway backend: `BACKEND_API_URL=https://back-tailor-challenge-production.up.railway.app`
+
+### Render Deployment
+
+For a Docker deploy on Render, configure these environment variables on the Render service:
+
+```env
+BACKEND_API_URL=https://back-tailor-challenge-production.up.railway.app
+NEXT_PUBLIC_API_URL=/api
+```
+
+Do not set `BACKEND_API_URL` to `localhost` on Render. The frontend runtime proxy reads `BACKEND_API_URL` inside the running container and forwards `/api/*` requests to that backend.
+
+Render provides the runtime `PORT` environment variable. The Docker image does not force a local port for production.
 
 ### Essential Docker Flow
 
