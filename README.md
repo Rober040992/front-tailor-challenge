@@ -88,7 +88,7 @@ Start the backend API using the backend repository instructions.
 Start the frontend development server:
 
 ```bash
-npm run dev -- -p 3001
+npm run dev
 ```
 
 Open [http://localhost:3001](http://localhost:3001).
@@ -137,7 +137,7 @@ NEXT_PUBLIC_API_URL=/api
 
 Do not set `BACKEND_API_URL` to `localhost` on Render. The frontend runtime proxy reads `BACKEND_API_URL` inside the running container and forwards `/api/*` requests to that backend.
 
-Render provides the runtime `PORT` environment variable. The Docker image does not force a local port for production.
+The Docker image defaults to port `3001` for local use. Render provides the runtime `PORT` environment variable and can override that default in production.
 
 The Render service uses the free plan. If the project has been inactive for a while, the first request can take a long time while the service wakes up. During that cold start, pages, backend data, and images may load slowly.
 
@@ -196,12 +196,7 @@ npm run dev
 ```
 
 Starts the Next.js development server.
-
-For the expected local frontend port, run:
-
-```bash
-npm run dev -- -p 3001
-```
+The configured local frontend URL is [http://localhost:3001](http://localhost:3001).
 
 ```bash
 npm run build
@@ -390,7 +385,7 @@ Cancelled reservations stay visible and show their cancelled status.
 
 1. Start the backend API using the backend README.
 2. Confirm the backend URL matches `BACKEND_API_URL` in `.env`.
-3. Start the frontend with `npm run dev -- -p 3001`.
+3. Start the frontend with `npm run dev`.
 4. Open [http://localhost:3001](http://localhost:3001).
 5. Use the home page `Enter` action to go to `/restaurants`.
 6. Confirm the restaurant list loads backend data.
